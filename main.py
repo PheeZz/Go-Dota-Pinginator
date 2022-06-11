@@ -79,7 +79,15 @@ def pinger(message):
             chat_id=message.chat.id, text=ping_string)
 
 
+@bot.message_handler(content_types=["text"])
+def roll(message):
+    if message.text == 'roll':
+        bot.send_message(
+            chat_id=message.chat.id, text=f'Ваш результат: {random.randint(1, 100)}')
+
 # Запускаем бота
+
+
 @logger.catch
 def start_bot():
     bot.polling(none_stop=True, interval=0)
