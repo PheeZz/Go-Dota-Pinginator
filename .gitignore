@@ -3,5 +3,5 @@ __pycache__/
 .env
 temp*
 test.py
-*.log
-*.yaml
+*_*.log
+-*.yaml
