@@ -89,7 +89,7 @@ def pinger(message):
 
     elif message.text.lower().startswith('try'):
         result = ('УСПЕШНО', 'НЕУДАЧНО')
-        try_string = message.text.replace('try', '')
+        try_string = message.text.lower().replace('try', '')
         answer = bot.send_message(
             chat_id=message.chat.id, text=f'{try_string}: *{random.choice(result)}*', parse_mode='Markdown')
         util.create_timer_thread(message, answer, bot)
