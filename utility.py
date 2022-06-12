@@ -1,3 +1,4 @@
+from loguru import logger
 import yaml
 from dataclasses import dataclass
 import time as t
@@ -28,12 +29,15 @@ class message_timer:
 def create_clean_timer(message_timer, bot):
     while True:
         if t.time() - message_timer.time_stamp >= 300:
-            bot.delete_message(chat_id=message_timer.chat_id,
-                               message_id=message_timer.bot_answer_id)
-            bot.delete_message(chat_id=message_timer.chat_id,
-                               message_id=message_timer.user_message_id)
-            del message_timer
-            return False
+            try:
+                bot.delete_message(chat_id=message_timer.chat_id,
+                                   message_id=message_timer.bot_answer_id)
+                bot.delete_message(chat_id=message_timer.chat_id,
+                                   message_id=message_timer.user_message_id)
+                del message_timer
+                return False
+            except:
+                logger.error(f'error in create_clean_timer: message not found')
 
 
 def create_timer_thread(message, answer, bot):

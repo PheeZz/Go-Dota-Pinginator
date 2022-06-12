@@ -22,6 +22,8 @@ logger.add(f"logs/{get_Datetime()}.log", rotation='1 day', level="DEBUG")
 bot = telebot.TeleBot(getenv("TOKEN"))
 
 # /start command
+
+
 @bot.message_handler(commands=["start"])
 def start(message, res=False):
     bot.send_message(
@@ -80,10 +82,16 @@ def pinger(message):
             chat_id=message.chat.id, text=ping_string)
         util.create_timer_thread(message, answer, bot)
 
-    elif message.text == 'roll':
+    elif message.lower() == 'roll':
         answer = bot.send_message(
             chat_id=message.chat.id, text=f'Ваш результат: {random.randint(1, 100)}')
         util.create_timer_thread(message, answer, bot)
+
+    elif message.lower().startswith('try'):
+        result = ('**УСПЕШНО**', '**НЕУДАЧНО**')
+        try_string = message.replace('try', '')
+        answer = bot.send_message(
+            chat_id=message.chat.id, text=f'{try_string}: {random.choice(result)}')
 
 
 @logger.catch
