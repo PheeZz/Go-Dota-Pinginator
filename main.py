@@ -91,7 +91,8 @@ def pinger(message):
         result = ('УСПЕШНО', 'НЕУДАЧНО')
         try_string = message.text.replace('try', '')
         answer = bot.send_message(
-            chat_id=message.chat.id, text=f'{try_string}: *{random.choice(result)}*', parse_mode= 'Markdown')
+            chat_id=message.chat.id, text=f'{try_string}: *{random.choice(result)}*', parse_mode='Markdown')
+        util.create_clean_timer_thread(message, answer, bot)
 
 
 @logger.catch
