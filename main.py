@@ -1,11 +1,12 @@
 import telebot
-import os
 from dotenv import load_dotenv
 from loguru import logger
+from os import getenv
 import utility as util
 from datetime import datetime
 import random
-load_dotenv()
+
+load_dotenv(override=True)
 
 
 def get_Datetime():
@@ -16,9 +17,9 @@ def get_Datetime():
 
 # create logger
 logger.add(f"logs/{get_Datetime()}.log", rotation='1 day', level="DEBUG")
-# create a bot
-bot = telebot.TeleBot(os.getenv('TOKEN'))
 
+# create a bot
+bot = telebot.TeleBot(getenv("TOKEN"))
 
 # /start command
 @bot.message_handler(commands=["start"])
@@ -40,10 +41,8 @@ def add_user_in_yaml(message):
         data = util.load_yaml(f'data/chat_users/{chat_id}.yaml')
         if 'chat_id' in data:
             del data['chat_id']
-        if new_user.username:
+        if new_user.username not in data:
             data.update({new_user.username: new_user.id})
-        else:
-            data.update({new_user.first_name: new_user.id})
         util.dump_yaml(f'data/chat_users/{chat_id}.yaml', data)
 
 
@@ -51,7 +50,7 @@ def add_user_in_yaml(message):
 def delete_user_from_yaml(message):
     left_user = message.left_chat_members[0]
     chat_id = message.chat.id
-    data = util.load_yaml(f'data/chat_users/{chat_id}.yaml', 'r')
+    data = util.load_yaml(f'data/chat_users/{chat_id}.yaml')
 
     try:
         del data[left_user.username]
@@ -70,23 +69,25 @@ def pinger(message):
         users = util.load_yaml(f'data/chat_users/{message.chat.id}.yaml')
         for user in users:
             ping_string += f'@{user} '
+
         pretty_adder = ('Го каточку, сладкие мои <3 ', 'Заебали, пошли в доту',
                         'ЭЭЭ ойбой', 'хочу сосать, пошли сосааааать')
         ping_string = f'\n{random.choice(pretty_adder)}\n{ping_string}'
         logger.info(
             f'ping string: {ping_string}\n chat id: {message.chat.id}\n')
-        bot.send_message(
+
+        answer = bot.send_message(
             chat_id=message.chat.id, text=ping_string)
+        util.create_timer_thread(message, answer, bot)
 
     elif message.text == 'roll':
-        bot.send_message(
+        answer = bot.send_message(
             chat_id=message.chat.id, text=f'Ваш результат: {random.randint(1, 100)}')
-
-# Запускаем бота
+        util.create_timer_thread(message, answer, bot)
 
 
 @logger.catch
-def start_bot():
+def start_bot():  # Запускаем бота
     bot.polling(none_stop=True, interval=0)
 
 
