@@ -92,7 +92,7 @@ def pinger(message):
         try_string = message.text.replace('try', '')
         answer = bot.send_message(
             chat_id=message.chat.id, text=f'{try_string}: *{random.choice(result)}*', parse_mode='Markdown')
-        util.create_clean_timer_thread(message, answer, bot)
+        util.create_timer_thread(message, answer, bot)
 
 
 @logger.catch
