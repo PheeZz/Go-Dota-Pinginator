@@ -16,12 +16,12 @@ def get_Datetime():
     return pretty_str
 
 
-# create logger
+    # create logger
 logger.add(f"logs/{get_Datetime()}.log", rotation='1 day',
            level="DEBUG", compression='zip')
 
 # create a bot
-bot = telebot.TeleBot(getenv("TOKEN"))
+bot = telebot.TeleBot(getenv('TOKEN'))
 bot.set_my_commands(
     commands=[types.BotCommand(command='/help', description='show help message'),
               types.BotCommand(
@@ -39,14 +39,13 @@ def start(message, res=False):
 
 @bot.message_handler(commands=["dice"])
 def dice(message):
-    bot.send_dice(message.chat.id)
+    util.create_timer_thread(message, bot.send_dice(message.chat.id), bot)
 
 
 @bot.message_handler(commands=["roll"])
 def roll(message):
-    answer = bot.send_message(
-        chat_id=message.chat.id, text=f'Ваш результат: {random.randint(1, 100)}')
-    util.create_timer_thread(message, answer, bot)
+    util.create_timer_thread(message, bot.send_message(
+        chat_id=message.chat.id, text=f'Ваш результат: {random.randint(1, 100)}'), bot)
 
 
 @bot.message_handler(commands=["keyboard"])
@@ -58,13 +57,14 @@ def show_keyboard(message):
     for button in buttons:
         markup.add(button)
     bot.send_message(
-        message.chat.id, text='Клавиатура обновлена', reply_markup=markup)
+        message.chat.id, text='⌨️', reply_markup=markup)
 
 
 @bot.message_handler(commands=["help"])
 def show_help(message):
     help_msg = "/dice - бросить кубик\n/roll - получить рандомное число от 1 до 100\n/keyboard - показать клавиатуру c быстрыми сообщениями\n/help - показать справку\n\ntry <действие> - проверка на успех действия\n\nmade by @pheezz"
-    bot.send_message(message.chat.id, help_msg)
+    util.create_timer_thread(message, bot.send_message(
+        message.chat.id, help_msg), bot)
 
 
 @bot.message_handler(content_types=["new_chat_members"])
@@ -122,9 +122,8 @@ def pinger(message):
     elif message.text.lower().startswith('try'):
         result = ('УСПЕШНО', 'НЕУДАЧНО')
         try_string = message.text.lower().replace('try', '')
-        answer = bot.send_message(
-            chat_id=message.chat.id, text=f'{try_string}: *{random.choice(result)}*', parse_mode='Markdown')
-        util.create_timer_thread(message, answer, bot)
+        util.create_timer_thread(message, bot.send_message(
+            chat_id=message.chat.id, text=f'{try_string}: *{random.choice(result)}*', parse_mode='Markdown'), bot)
 
 
 @logger.catch
