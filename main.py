@@ -26,7 +26,9 @@ bot.set_my_commands(
     commands=[types.BotCommand(command='/help', description='show help message'),
               types.BotCommand(
                   command='/dice', description='roll a 1 to 6 dice'),
-              types.BotCommand(command='/roll', description='roll random 1 to 100 number'), ])
+              types.BotCommand(
+                  command='/roll', description='roll random 1 to 100 number'),
+              types.BotCommand(command='/keyboard', description='update fast answer keyboard'), ])
 
 
 @bot.message_handler(commands=["start"])
