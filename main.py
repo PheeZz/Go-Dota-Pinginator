@@ -1,4 +1,5 @@
 import telebot
+from telebot import types
 from dotenv import load_dotenv
 from loguru import logger
 from os import getenv
@@ -16,18 +17,52 @@ def get_Datetime():
 
 
 # create logger
-logger.add(f"logs/{get_Datetime()}.log", rotation='1 day', level="DEBUG")
+logger.add(f"logs/{get_Datetime()}.log", rotation='1 day',
+           level="DEBUG", compression='zip')
 
 # create a bot
 bot = telebot.TeleBot(getenv("TOKEN"))
-
-# /start command
+bot.set_my_commands(
+    commands=[types.BotCommand(command='/help', description='show help message'),
+              types.BotCommand(
+                  command='/dice', description='roll a 1 to 6 dice'),
+              types.BotCommand(command='/roll', description='roll random 1 to 100 number'), ])
 
 
 @bot.message_handler(commands=["start"])
 def start(message, res=False):
     bot.send_message(
         message.chat.id, 'Создайте чат и добавьте меня в него, затем добавьте всех в него всех пользователей для использования функционала!')
+
+
+@bot.message_handler(commands=["dice"])
+def dice(message):
+    bot.send_dice(message.chat.id)
+
+
+@bot.message_handler(commands=["roll"])
+def roll(message):
+    answer = bot.send_message(
+        chat_id=message.chat.id, text=f'Ваш результат: {random.randint(1, 100)}')
+    util.create_timer_thread(message, answer, bot)
+
+
+@bot.message_handler(commands=["keyboard"])
+def show_keyboard(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    buttons = (types.KeyboardButton('?'),
+               # types.KeyboardButton('/dice'),
+               )
+    for button in buttons:
+        markup.add(button)
+    bot.send_message(
+        message.chat.id, text='Клавиатура обновлена', reply_markup=markup)
+
+
+@bot.message_handler(commands=["help"])
+def show_help(message):
+    help_msg = "/dice - бросить кубик\n/roll - получить рандомное число от 1 до 100\n/keyboard - показать клавиатуру c быстрыми сообщениями\n/help - показать справку\n\ntry <действие> - проверка на успех действия\n\nmade by @pheezz"
+    bot.send_message(message.chat.id, help_msg)
 
 
 @bot.message_handler(content_types=["new_chat_members"])
@@ -80,11 +115,6 @@ def pinger(message):
 
         answer = bot.send_message(
             chat_id=message.chat.id, text=ping_string)
-        util.create_timer_thread(message, answer, bot)
-
-    elif message.text.lower() == 'roll':
-        answer = bot.send_message(
-            chat_id=message.chat.id, text=f'Ваш результат: {random.randint(1, 100)}')
         util.create_timer_thread(message, answer, bot)
 
     elif message.text.lower().startswith('try'):
