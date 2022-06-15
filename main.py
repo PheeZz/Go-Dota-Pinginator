@@ -53,7 +53,7 @@ def roll(message):
 def show_keyboard(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = (types.KeyboardButton('?'),
-               # types.KeyboardButton('/dice'),
+               types.KeyboardButton('/roll'),
                )
     for button in buttons:
         markup.add(button)
