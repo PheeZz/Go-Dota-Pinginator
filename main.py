@@ -48,9 +48,9 @@ def add_user_in_yaml(message):
         util.dump_yaml(f'data/chat_users/{chat_id}.yaml', data)
 
 
-@bot.message_handler(content_types=["left_chat_members"])
+@bot.message_handler(content_types=["left_chat_member"])
 def delete_user_from_yaml(message):
-    left_user = message.left_chat_members[0]
+    left_user = message.left_chat_member
     chat_id = message.chat.id
     data = util.load_yaml(f'data/chat_users/{chat_id}.yaml')
 
