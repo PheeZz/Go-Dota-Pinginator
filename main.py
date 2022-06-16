@@ -6,6 +6,7 @@ from os import getenv
 import utility as util
 from datetime import datetime
 import random
+import steam
 
 load_dotenv(override=True)
 
@@ -22,19 +23,74 @@ logger.add(f"logs/{get_Datetime()}.log", rotation='1 day',
 
 # create a bot
 bot = telebot.TeleBot(getenv('TOKEN'))
+
 bot.set_my_commands(
     commands=[types.BotCommand(command='/help', description='show help message'),
               types.BotCommand(
                   command='/dice', description='roll a 1 to 6 dice'),
               types.BotCommand(
                   command='/roll', description='roll random 1 to 100 number'),
-              types.BotCommand(command='/keyboard', description='update fast answer keyboard'), ])
+              types.BotCommand(command='/keyboard',
+                               description='update fast answer keyboard'),
+              types.BotCommand(command='/status',
+                               description='show Steam servers status'),
+              types.BotCommand(command='/bomber',
+                               description="admin's little secret😈"),
+              types.BotCommand(command='/admins', description="show list of admins"), ])
+
+
+def create_ping_msg(message):
+    ping_string = str()
+    users = util.load_yaml(f'data/chat_users/{message.chat.id}.yaml')
+    for user in users:
+        ping_string += f'@{user} '
+
+    pretty_adder = ('Го каточку, сладкие мои <3 🤍🖤', 'Заебали, пошли в доту🍺',
+                    'ЭЭЭ ойбой🙈🙉🙊', 'Хочу сосать, пошли сосааааать👺', 'Пошли в доту😈', 'Может в жопу?👉🏽💦')
+    ping_string = f'\n{random.choice(pretty_adder)}\n{ping_string}'
+    logger.info(
+        f'ping string: {ping_string} created\n chat id: {message.chat.id}\n')
+    return ping_string
 
 
 @bot.message_handler(commands=["start"])
 def start(message, res=False):
     bot.send_message(
         message.chat.id, 'Создайте чат и добавьте меня в него, затем добавьте всех в него всех пользователей для использования функционала!')
+
+
+@bot.message_handler(commands=["admins"])
+def send_list_of_admins(message):
+    admins = list(
+        admin.user.username for admin in bot.get_chat_administrators(message.chat.id))
+    admins_string = '\n@'.join(admins)
+    bot.send_message(
+        message.chat.id, f'Администраторы:\n{admins_string}')
+
+
+@bot.message_handler(commands=["bomber"])
+def bomber(message):
+    if message.from_user.username in tuple(admin.user.username for admin in bot.get_chat_administrators(message.chat.id)):
+        for _ in range(5):
+            ping_string = create_ping_msg(message)
+            answer = bot.send_message(
+                chat_id=message.chat.id, text=ping_string)
+            util.create_timer_thread(message, answer, bot)
+
+    else:
+        answer = bot.send_message(
+            chat_id=message.chat.id, text='ихихихиххи\nАдминки то нет😢')
+        util.create_timer_thread(message, answer, bot)
+
+
+@bot.message_handler(commands=["status"])
+def send_steam_status(message):
+    loading = bot.send_message(
+        chat_id=message.chat.id, text='Подождите немного...')
+    answer = bot.send_message(chat_id=message.chat.id,
+                              text=steam.call_csgo_api())
+    bot.delete_message(chat_id=message.chat.id, message_id=loading.message_id)
+    util.create_timer_thread(message, answer, bot)
 
 
 @bot.message_handler(commands=["dice"])
@@ -62,7 +118,7 @@ def show_keyboard(message):
 
 @bot.message_handler(commands=["help"])
 def show_help(message):
-    help_msg = "/dice - бросить кубик\n/roll - получить рандомное число от 1 до 100\n/keyboard - показать клавиатуру c быстрыми сообщениями\n/help - показать справку\n\ntry <действие> - проверка на успех действия\n\nmade by @pheezz"
+    help_msg = "/dice - бросить кубик\n/roll - получить рандомное число от 1 до 100\n/keyboard - показать клавиатуру c быстрыми сообщениями\n/status - показать статус серверов steam\n/help - показать справку\n\ntry <действие> - проверка на успех действия\n\nmade by @pheezz"
     util.create_timer_thread(message, bot.send_message(
         message.chat.id, help_msg), bot)
 
@@ -102,19 +158,9 @@ def delete_user_from_yaml(message):
 
 
 @bot.message_handler(content_types=["text"])
-def pinger(message):
+def pinger_answer(message):
     if message.text == '?':
-        ping_string = str()
-        users = util.load_yaml(f'data/chat_users/{message.chat.id}.yaml')
-        for user in users:
-            ping_string += f'@{user} '
-
-        pretty_adder = ('Го каточку, сладкие мои <3 ', 'Заебали, пошли в доту',
-                        'ЭЭЭ ойбой', 'хочу сосать, пошли сосааааать')
-        ping_string = f'\n{random.choice(pretty_adder)}\n{ping_string}'
-        logger.info(
-            f'ping string: {ping_string}\n chat id: {message.chat.id}\n')
-
+        ping_string = create_ping_msg(message)
         answer = bot.send_message(
             chat_id=message.chat.id, text=ping_string)
         util.create_timer_thread(message, answer, bot)
