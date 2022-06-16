@@ -16,7 +16,6 @@ def get_Datetime():
     pretty_str = now.strftime("%d.%m.%Y_%H.%M.%S")
     return pretty_str
 
-
     # create logger
 logger.add(f"logs/{get_Datetime()}.log", rotation='1 day',
            level="DEBUG", compression='zip')
@@ -89,9 +88,9 @@ def send_steam_status(message):
     loading = bot.send_message(
         chat_id=message.chat.id, text='Подождите немного...')
     answer = bot.send_message(chat_id=message.chat.id,
-                              text=steam.call_csgo_api())
+                              text=steam.call_csgo_api(), parse_mode='Markdown')
     bot.delete_message(chat_id=message.chat.id,
-                       message_id=loading.message_id, parse_mode='Markdown')
+                       message_id=loading.message_id)
     util.create_timer_thread(message, answer, bot)
 
 
