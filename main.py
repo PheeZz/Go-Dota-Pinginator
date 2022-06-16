@@ -64,8 +64,9 @@ def send_list_of_admins(message):
     admins = list(
         admin.user.username for admin in bot.get_chat_administrators(message.chat.id))
     admins_string = '\n@'.join(admins)
-    bot.send_message(
+    answer = bot.send_message(
         message.chat.id, f'Администраторы:\n{admins_string}')
+    util.create_timer_thread(message, answer, bot)
 
 
 @bot.message_handler(commands=["bomber"])
