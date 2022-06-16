@@ -90,7 +90,8 @@ def send_steam_status(message):
         chat_id=message.chat.id, text='Подождите немного...')
     answer = bot.send_message(chat_id=message.chat.id,
                               text=steam.call_csgo_api())
-    bot.delete_message(chat_id=message.chat.id, message_id=loading.message_id)
+    bot.delete_message(chat_id=message.chat.id,
+                       message_id=loading.message_id, parse_mode='Markdown')
     util.create_timer_thread(message, answer, bot)
 
 
