@@ -71,12 +71,14 @@ def send_list_of_admins(message):
 @bot.message_handler(commands=["bomber"])
 def bomber(message):
     if message.from_user.username in tuple(admin.user.username for admin in bot.get_chat_administrators(message.chat.id)):
+        spam = list()
         for _ in range(10):
             ping_string = create_ping_msg(message)
             answer = bot.send_message(
                 chat_id=message.chat.id, text=ping_string)
-            bot.delete_message(message.chat.id, answer.message_id)
-        bot.delete_message(message.chat.id, message.message_id)
+            spam.append(answer)
+        for _ in range(len(spam)):
+            bot.delete_message(message.chat.id, spam.pop().message_id)
     else:
         answer = bot.send_message(
             chat_id=message.chat.id, text='ихихихиххи\nАдминки то нет😢')
