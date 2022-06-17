@@ -36,8 +36,8 @@ def create_clean_timer(message_timer, bot):
                                    message_id=message_timer.user_message_id)
                 del message_timer
                 return False
-            except:
-                logger.error(f'error in create_clean_timer: message not found')
+            except Exception as e:
+                logger.error(f'error: {e} in create_clean_timer: message not found')
 
 
 def create_timer_thread(message, answer, bot):

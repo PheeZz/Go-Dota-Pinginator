@@ -16,14 +16,14 @@ def call_csgo_api():
     info_interesting_datacenters = {datacenter: datacenters.get(  # sort info about interesting datacenters (location of each server)
         datacenter) for datacenter in interesting_datacenters}
 
-    answer_string = '**Игровые сервера**\n'
+    answer_string = '*Игровые сервера*\n'
     for server in info_interesting_datacenters:
         if info_interesting_datacenters.get(server).get('capacity') == 'full':
             answer_string += f'{server}: 🟢Online\n'
         else:
             answer_string += f'{server}: ❌Offline\n'
 
-    answer_string += '\n**Сервисы Steam**\n'
+    answer_string += '\n*Сервисы Steam*\n'
 
     if services.get('SessionsLogon') == 'normal':
         answer_string += 'Система входа: 🟢Online\n'
