@@ -79,6 +79,11 @@ def bomber(message):
             spam.append(answer)
         for _ in range(len(spam)):
             bot.delete_message(message.chat.id, spam.pop().message_id)
+
+        try:
+            bot.delete_message(message.chat.id, message.message_id)
+        except Exception as e:
+            logger.error(f'{e}')
     else:
         answer = bot.send_message(
             chat_id=message.chat.id, text='ихихихиххи\nАдминки то нет😢')
