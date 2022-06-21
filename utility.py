@@ -13,8 +13,8 @@ def load_yaml(file):
         return dict()
 
 
-def dump_yaml(file, data):
-    with open(file, 'w+') as f:
+def dump_yaml(file, data: dict):
+    with open(file, 'w') as f:
         yaml.dump(data, f)
 
 
@@ -37,11 +37,11 @@ def create_clean_timer(message_timer, bot):
                 del message_timer
                 return False
             except Exception as e:
-                logger.error(f'error: {e} in create_clean_timer: message not found')
+                logger.error(
+                    f'error: {e} in create_clean_timer: message not found')
 
 
 def create_timer_thread(message, answer, bot):
     timer = message_timer(
         chat_id=message.chat.id, user_message_id=message.message_id, bot_answer_id=answer.message_id, time_stamp=t.time())
     Thread(target=create_clean_timer, args=(timer, bot)).start()
-
