@@ -161,22 +161,13 @@ def start_invite(message):
     lobby_count = len(listdir(f'data/lobby/{message.chat.id}'))
     bot.send_message(chat_id=message.chat.id,
                      text=f'Количество созданных лобби: {lobby_count}')
-    if lobby_count == 1:
-        lobby = listdir(f'data/lobby/{message.chat.id}')
-        lobby[0] = lobby[0].replace('.yaml', '')
-        lobby = str(lobby[0])
 
-        answer = bot.send_message(
-            message.chat.id, 'Пинганите пользователей одним сообщением для приглашения')
-        bot.register_next_step_handler(
-            message, steam.create_invites_from_message, lobby)
-
-    elif lobby_count == 0:
+    if lobby_count == 0:
         answer = bot.send_message(
             message.chat.id, f'Нет ни одного существующего лобби, используйте /create_lobby')
         util.create_timer_thread(message, answer, bot)
 
-    else:  # сразу отправляем invite
+    else:
         choose_lobby(message)
 
 
