@@ -53,7 +53,9 @@ bot.set_my_commands(
                                description="invite someone to lobby"),
               types.BotCommand(command='/lobby_list',
                                description="shows exist lobby list"),
-              types.BotCommand(command='/delete_all_lobbies', description="only for admin"), ])
+              types.BotCommand(command='/delete_all_lobbies',
+                               description="only for admin"),
+              types.BotCommand(command='/set_priority', description="set your autoroll priority"), ])
 
 
 def create_ping_msg(message):

@@ -66,12 +66,12 @@ def register_role_priority(message):
         logger.error(f'File {message.chat.id} for roles priority not found')
     role_priority.update(user_roles)
 
-    yaml.dump(user_roles, open(
-        f'data/role_priority/{message.chat.id}.yaml', 'w'))
+    with open(f'data/role_priority/{message.chat.id}.yaml', 'w') as stream:
+        yaml.dump(role_priority, stream)
     logger.info(f'{message.from_user.username} registered role priority {only_digits} for chat {message.chat.id} in file: data/role_priority/{message.chat.id}.yaml')
 
 
-def get_user_priority(message) -> str | None:
+def get_user_priority(message):
     try:
         with open(f'data/role_priority/{message.chat.id}.yaml', 'r') as stream:
             roles_priority_dict = yaml.full_load(stream)
@@ -85,7 +85,7 @@ def show_my_priority(message, bot):
     user_roles = get_user_priority(message)
     if user_roles is None:
         bot.send_message(chat_id=message.chat.id,
-                         text='Вы не зарегистрированы в системе\nИспользуйте команду /setpriority для регистрации')
+                         text='Вы не зарегистрированы в системе\nИспользуйте команду /set_priority для регистрации')
     else:
         bot.send_message(chat_id=message.chat.id,
                          text=f'{message.from_user.first_name}, ваша приоритетность ролей:\n{user_roles}')
