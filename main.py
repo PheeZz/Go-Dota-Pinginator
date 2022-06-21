@@ -169,7 +169,7 @@ def start_invite(message):
         answer = bot.send_message(
             message.chat.id, 'Пинганите пользователей одним сообщением для приглашения')
         bot.register_next_step_handler(
-            message, steam.create_invites_from_message, kwargs=(message, lobby, bot))
+            message, steam.create_invites_from_message, lobby)
 
     elif lobby_count == 0:
         answer = bot.send_message(
