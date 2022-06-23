@@ -12,6 +12,45 @@ from telebot import types
 load_dotenv(override=True)
 
 
+def call_steamstatus():
+    request = rq.get(
+        'https://clck.ru/rd8HN').json().get('services')
+    answer_string = '*Сервисы Steam*\n'
+
+    for service in request:
+        if service[0] == 'community':
+            if service[2] in ('Normal', 'OK'):
+                answer_string += f'Сообщество:\t 🟢Online\n'
+            else:
+                answer_string += f'Сообщество:\t 🔴Offline\n'
+
+        if service[0] == 'store':
+            if service[2] in ('Normal', 'OK'):
+                answer_string += f'Магазин:\t 🟢Online\n'
+            else:
+                answer_string += f'Магазин:\t 🔴Offline\n'
+
+        if service[0] == 'online':
+            answer_string += f'Текущий online: {service[2]}\n'
+
+    answer_string += '\n\n*Игровые серверы*\n'
+
+    for service in request:
+        if service[0] == 'csgo_community':
+            if service[2] in ('Normal', 'OK'):
+                answer_string += f'CSGO:\t 🟢Online\n'
+            else:
+                answer_string += f'CSGO:\t 🔴{service[2]}\n'
+
+        if service[0] == 'dota2':
+            if service[2] in ('Normal', 'OK'):
+                answer_string += f'DOTA2:\t 🟢Online\n'
+            else:
+                answer_string += f'DOTA2:\t 🔴{service[2]}\n'
+
+    return answer_string
+
+
 def call_csgo_api():
     req = rq.get(
         f'https://api.steampowered.com/ICSGOServers_730/GetGameServersStatus/v1/?key={getenv("STEAM_API_KEY")}').json()  # get info about servers by steam-web-api
