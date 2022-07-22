@@ -1,5 +1,3 @@
-from itertools import count
-from unittest import result
 import requests as rq
 from dotenv import load_dotenv
 from os import getenv, mkdir, listdir
@@ -84,33 +82,7 @@ def call_csgo_api():
     return answer_string
 
 
-def register_role_priority(message):
-    '''
-    функция, задающая значение приоритетности (по убыванию) ролей пользователя для авторолла
-    '''
-    only_digits = ''.join(filter(str.isdigit, message.text))
-    if len(set(only_digits)) < 5:  # защита от хитрожопых пользователей
-        digits = set(only_digits)
-        only_digits = ''.join(digits)
-        while len(only_digits) < 5:
-            only_digits += '5'
-
-    user_roles = {message.from_user.username: only_digits}
-
-    try:
-        with open(f'data/role_priority/{message.chat.id}.yaml', 'r') as stream:
-            role_priority = yaml.full_load(stream)
-    except FileNotFoundError:
-        role_priority = dict()
-        logger.error(f'File {message.chat.id} for roles priority not found')
-    role_priority.update(user_roles)
-
-    with open(f'data/role_priority/{message.chat.id}.yaml', 'w') as stream:
-        yaml.dump(role_priority, stream)
-    logger.info(f'{message.from_user.username} registered role priority {only_digits} for chat {message.chat.id} in file: data/role_priority/{message.chat.id}.yaml')
-
-
-def get_user_priority(message):
+def get_user_priority(message: types.Message):
     try:
         with open(f'data/role_priority/{message.chat.id}.yaml', 'r') as stream:
             roles_priority_dict = yaml.full_load(stream)
@@ -185,25 +157,6 @@ def create_lobby(message, bot):
         answer = bot.send_message(chat_id=message.chat.id,
                                   text='Лобби не создано\nПочему? Неизвестно хиихихихихихихиихих')
         return answer
-
-
-def users_lobbies(message) -> list:
-    '''
-    возвращает список лобби в которых находится пользователь
-    '''
-    lobby_list = listdir(f'data/lobby/{message.chat.id}')
-    users_lobby_list = list()
-
-    for lobby in lobby_list:
-        with open(f'data/lobby/{message.chat.id}/{lobby}', 'r') as stream:
-            lobby_dict = yaml.full_load(stream)
-            if message.from_user.username in lobby_dict.keys():
-                users_lobby_list.append(lobby)
-
-    users_lobby_list = [lobby.replace('.yaml', '')
-                        for lobby in users_lobby_list]
-
-    return users_lobby_list
 
 
 def roll_roles(message, bot):

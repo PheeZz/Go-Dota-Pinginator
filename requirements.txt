@@ -2,6 +2,7 @@ autopep8==1.6.0
 certifi==2022.5.18.1
 charset-normalizer==2.0.12
 colorama==0.4.4
+fake-useragent==0.1.11
 idna==3.3
 loguru==0.6.0
 pyaes==1.6.1
